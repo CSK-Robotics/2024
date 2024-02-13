@@ -1,0 +1,49 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.3958615556120002,
+      "y": 2.803536486702603
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "SpeakerShot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "To Center Note"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "GroundIntake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center Note To Climb"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ClimbAndTrap"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
