@@ -2,7 +2,10 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.Drive;
+
+import org.littletonrobotics.junction.LogTable;
+import org.littletonrobotics.junction.inputs.LoggableInputs;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -12,9 +15,9 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.estimator.MecanumDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.MecanumDriveMotorVoltages;
-import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.util.sendable.SendableRegistry;
@@ -23,14 +26,13 @@ import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import frc.robot.Constants.DriveConstants;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public final class Drivetrain extends SubsystemBase {
+public final class Drivetrain extends SubsystemBase implements AutoCloseable {
+  
+
   private final CANSparkMax m_frontLeft = new CANSparkMax(DriveConstants.kFrontLeftMotorPort, MotorType.kBrushless);
   private final CANSparkMax m_rearLeft = new CANSparkMax(DriveConstants.kRearLeftMotorPort, MotorType.kBrushless);
   private final CANSparkMax m_frontRight = new CANSparkMax(DriveConstants.kFrontRightMotorPort, MotorType.kBrushless);
   private final CANSparkMax m_rearRight = new CANSparkMax(DriveConstants.kRearRightMotorPort, MotorType.kBrushless);
-
-  private final MecanumDrive m_drive = new MecanumDrive(m_frontLeft::set, m_rearLeft::set, m_frontRight::set,
-      m_rearRight::set);
 
   // The front-left-side drive encoder
   private final RelativeEncoder m_frontLeftEncoder = m_frontLeft.getEncoder();
@@ -52,6 +54,12 @@ public final class Drivetrain extends SubsystemBase {
   // and PID Controller
   private final SparkPIDController m_rearRightController = m_rearRight.getPIDController();
 
+  private final MecanumDrive m_drive = new MecanumDrive(
+      (double speed) -> this.setSpeed(speed, m_frontLeftController),
+      (double speed) -> this.setSpeed(speed, m_frontRightController),
+      (double speed) -> this.setSpeed(speed, m_rearLeftController),
+      (double speed) -> this.setSpeed(speed, m_rearRightController));
+
   // The gyro sensor
   private final ADXRS450_Gyro m_gyro = new ADXRS450_Gyro();
 
@@ -61,11 +69,6 @@ public final class Drivetrain extends SubsystemBase {
 
   /** Creates a new DriveSubsystem. */
   public Drivetrain() {
-    SendableRegistry.addChild(m_drive, m_frontLeft);
-    SendableRegistry.addChild(m_drive, m_rearLeft);
-    SendableRegistry.addChild(m_drive, m_frontRight);
-    SendableRegistry.addChild(m_drive, m_rearRight);
-
     // Sets the distance per pulse for the encoders
     m_frontLeftEncoder.setVelocityConversionFactor(DriveConstants.kEncoderDistancePerRotation);
     m_rearLeftEncoder.setVelocityConversionFactor(DriveConstants.kEncoderDistancePerRotation);
@@ -81,39 +84,27 @@ public final class Drivetrain extends SubsystemBase {
     m_frontRight.setInverted(true);
     m_rearRight.setInverted(true);
 
-    m_frontLeftController.setP(DriveConstants.kPIDFrontLeftVel.kP);
-    m_frontLeftController.setI(DriveConstants.kPIDFrontLeftVel.kI);
-    m_frontLeftController.setD(DriveConstants.kPIDFrontLeftVel.kD);
-    m_frontLeftController.setFF(DriveConstants.kPIDFrontLeftVel.kFF);
-    m_frontLeftController.setIZone(DriveConstants.kPIDFrontLeftVel.kIz);
-    m_frontLeftController.setOutputRange(-DriveConstants.kMaxAttainableSpeed, DriveConstants.kMaxAttainableSpeed);
-
-    m_frontRightController.setP(DriveConstants.kPIDFrontRightVel.kP);
-    m_frontRightController.setI(DriveConstants.kPIDFrontRightVel.kI);
-    m_frontRightController.setD(DriveConstants.kPIDFrontRightVel.kD);
-    m_frontRightController.setFF(DriveConstants.kPIDFrontRightVel.kFF);
-    m_frontRightController.setIZone(DriveConstants.kPIDFrontRightVel.kIz);
-    m_frontRightController.setOutputRange(-DriveConstants.kMaxAttainableSpeed, DriveConstants.kMaxAttainableSpeed);
-
-    m_rearLeftController.setP(DriveConstants.kPIDRearLeftVel.kP);
-    m_rearLeftController.setI(DriveConstants.kPIDRearLeftVel.kI);
-    m_rearLeftController.setD(DriveConstants.kPIDRearLeftVel.kD);
-    m_rearLeftController.setFF(DriveConstants.kPIDRearLeftVel.kFF);
-    m_rearLeftController.setIZone(DriveConstants.kPIDRearLeftVel.kIz);
-    m_rearLeftController.setOutputRange(-DriveConstants.kMaxAttainableSpeed, DriveConstants.kMaxAttainableSpeed);
-
-    m_rearRightController.setP(DriveConstants.kPIDRearRightVel.kP);
-    m_rearRightController.setI(DriveConstants.kPIDRearRightVel.kI);
-    m_rearRightController.setD(DriveConstants.kPIDRearRightVel.kD);
-    m_rearRightController.setFF(DriveConstants.kPIDRearRightVel.kFF);
-    m_rearRightController.setIZone(DriveConstants.kPIDRearRightVel.kIz);
-    m_rearRightController.setOutputRange(-DriveConstants.kMaxAttainableSpeed, DriveConstants.kMaxAttainableSpeed);
+    DriveConstants.kPIDFrontLeftVel.configureController(m_frontLeftController, DriveConstants.kMaxAttainableSpeed);
+    DriveConstants.kPIDFrontRightVel.configureController(m_frontRightController, DriveConstants.kMaxAttainableSpeed);
+    DriveConstants.kPIDRearLeftVel.configureController(m_rearLeftController, DriveConstants.kMaxAttainableSpeed);
+    DriveConstants.kPIDRearRightVel.configureController(m_rearRightController, DriveConstants.kMaxAttainableSpeed);
   }
 
   @Override
   public void periodic() {
     // Update the odometry in the periodic block
     m_odometry.update(m_gyro.getRotation2d(), getCurrentWheelDistances());
+  }
+
+  public void close() {
+    m_frontLeft.close();
+    m_frontRight.close();
+    m_rearLeft.close();
+    m_rearRight.close();
+  }
+
+  public synchronized void updateInputs(Inputs inputs) {
+
   }
 
   /**
@@ -138,23 +129,9 @@ public final class Drivetrain extends SubsystemBase {
     m_odometry.addVisionMeasurement(measurement, timestamp);
   }
 
-  /**
-   * Set the desired speeds for each wheel.
-   *
-   * @param speeds The desired wheel speeds.
-   */
-  public void setSpeeds(MecanumDriveWheelSpeeds speeds) {
-    final double frontLeftFeedforward = DriveConstants.kFeedforward.calculate(speeds.frontLeftMetersPerSecond);
-    final double frontRightFeedforward = DriveConstants.kFeedforward.calculate(speeds.frontRightMetersPerSecond);
-    final double rearLeftFeedforward = DriveConstants.kFeedforward.calculate(speeds.rearLeftMetersPerSecond);
-    final double rearRightFeedforward = DriveConstants.kFeedforward.calculate(speeds.rearRightMetersPerSecond);
-
-    m_frontLeftController.setReference(speeds.frontLeftMetersPerSecond, ControlType.kVelocity, 0, frontLeftFeedforward);
-    m_frontRightController.setReference(speeds.frontRightMetersPerSecond, ControlType.kVelocity, 0,
-        frontRightFeedforward);
-    m_rearLeftController.setReference(speeds.rearLeftMetersPerSecond, ControlType.kVelocity, 0,
-        rearLeftFeedforward);
-    m_rearRightController.setReference(speeds.rearRightMetersPerSecond, ControlType.kVelocity, 0, rearRightFeedforward);
+  private void setSpeed(double speed, SparkPIDController controller) {
+    final double feedforward = DriveConstants.kFeedforward.calculate(speed);
+    controller.setReference(speed, ControlType.kVelocity, 0, feedforward);
   }
 
   /**
@@ -170,23 +147,20 @@ public final class Drivetrain extends SubsystemBase {
    *                      field.
    */
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
-    var mecanumDriveWheelSpeeds = DriveConstants.kDriveKinematics.toWheelSpeeds(
-        ChassisSpeeds.discretize(
-            fieldRelative
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                    xSpeed, ySpeed, rot, m_gyro.getRotation2d())
-                : new ChassisSpeeds(xSpeed, ySpeed, rot),
-            0.02));
-    drive(mecanumDriveWheelSpeeds);
+    m_drive.driveCartesian(xSpeed, ySpeed, rot, fieldRelative ? m_gyro.getRotation2d() : new Rotation2d());
   }
 
+  /** Sets the drive MotorControllers to given speeds. */
   public void drive(MecanumDriveWheelSpeeds speeds) {
     speeds.desaturate(DriveConstants.kMaxAttainableSpeed);
-    setSpeeds(speeds);
+    this.setSpeed(speeds.frontLeftMetersPerSecond, m_frontLeftController);
+    this.setSpeed(speeds.frontRightMetersPerSecond, m_frontRightController);
+    this.setSpeed(speeds.rearLeftMetersPerSecond, m_rearLeftController);
+    this.setSpeed(speeds.rearRightMetersPerSecond, m_rearRightController);
   }
 
-  /** Sets the front left drive MotorController to a voltage. */
-  public void setDriveMotorControllersVolts(MecanumDriveMotorVoltages volts) {
+  /** Sets the drive MotorControllers to given voltages. */
+  public void drive(MecanumDriveMotorVoltages volts) {
     m_frontLeft.setVoltage(volts.frontLeftVoltage);
     m_rearLeft.setVoltage(volts.rearLeftVoltage);
     m_frontRight.setVoltage(volts.frontRightVoltage);

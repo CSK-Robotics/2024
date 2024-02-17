@@ -9,11 +9,14 @@ import frc.robot.commands.Autos;
 import frc.robot.commands.SuperstructureManager;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Climber;
-import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.LED;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Vision;
+import frc.robot.subsystems.Drive.Drivetrain;
+import edu.wpi.first.wpilibj.PneumaticHub;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandStadiaController;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -26,18 +29,31 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+  private final PowerDistribution m_pdh;
+
   // The robot's subsystems and commands are defined here...
-  private final Drivetrain m_drivetrain = new Drivetrain();
-  private final SuperstructureManager m_superstructure = new SuperstructureManager(new Arm(), new Climber(), new Shooter(), new Intake());
-  private final Vision m_vision = new Vision(m_drivetrain, m_superstructure);
-  private final LED m_led = new LED();
+  private final Drivetrain m_drivetrain;
+  private final SuperstructureManager m_superstructure;
+  private final Vision m_vision;
+  private final LED m_led;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandStadiaController m_driverController =
-      new CommandStadiaController(OperatorConstants.kDriverControllerPort);
+  private final CommandStadiaController m_driverController;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    m_pdh = new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
+    
+    m_drivetrain = new Drivetrain();
+
+    m_superstructure = new SuperstructureManager(new Arm(), new Climber(), new Shooter(), new Intake());
+
+    m_vision = new Vision(m_drivetrain, m_superstructure);
+    m_led = new LED(m_superstructure, m_vision);
+
+    m_driverController =
+      new CommandStadiaController(OperatorConstants.kDriverControllerPort);
+
     // Configure the trigger bindings
     configureBindings();
   }
