@@ -14,6 +14,9 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.LED;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Vision;
+
+import java.util.Optional;
+
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -35,7 +38,7 @@ public class RobotContainer {
   private final Drivetrain m_drivetrain;
   private final SuperstructureManager m_superstructure;
   private final Vision m_vision;
-  private final LED m_led;
+  //private final LED m_led;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandStadiaController m_driverController;
@@ -46,10 +49,10 @@ public class RobotContainer {
     
     m_drivetrain = new Drivetrain();
 
-    m_superstructure = new SuperstructureManager(new Arm(), new Climber(), new Shooter(), new Intake());
+    m_superstructure = new SuperstructureManager(new Arm(Optional.empty()), new Climber(), new Shooter(), new Intake());
 
     m_vision = new Vision(m_drivetrain, m_superstructure);
-    m_led = new LED(m_superstructure, m_vision);
+    //m_led = new LED(m_superstructure, m_vision);
 
     m_driverController =
       new CommandStadiaController(OperatorConstants.kDriverControllerPort);

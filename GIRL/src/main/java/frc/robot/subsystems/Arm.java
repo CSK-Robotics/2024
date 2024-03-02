@@ -185,9 +185,9 @@ public class Arm extends SubsystemBase {
     private final Joint m_shoulder;
     private final Joint m_elbow;
 
-    public Arm(AbsoluteEncoder encoder) {
+    public Arm(Optional<AbsoluteEncoder> encoder) {
         m_shoulder = new Joint(ArmConstants.kShoulderMotorPort, "ArmShoulderJoint", MotorType.kBrushless,
-                ArmConstants.kPIDShoulder, false, Optional.of(encoder), ArmConstants.kShoulderMaxAttainableSpeed,
+                ArmConstants.kPIDShoulder, false, encoder, ArmConstants.kShoulderMaxAttainableSpeed,
                 ArmConstants.kShoulderMaxAcceleration, ArmConstants.kShoulderFeedforward);
 
         m_elbow = new Joint(ArmConstants.kElbowMotorPort, "ArmElbowJoint", MotorType.kBrushless, ArmConstants.kPIDElbow,
@@ -314,7 +314,11 @@ public class Arm extends SubsystemBase {
     }
 
     public State getState() {
-        return new State(this.setpoint.goal, this.m_shoulder.getPosition(), this.m_elbow.getPosition());
+        State temp = new State("temp");
+        temp.elbowAngle = m_elbow.getPosition();
+        temp.shoulderAngle = m_shoulder.getPosition();
+        temp.goal = setpoint.goal;
+        return temp;
     }
 
     public boolean atTarget() {
