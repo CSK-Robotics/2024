@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.SuperstructureManager;
-import frc.robot.subsystems.Drive.Drivetrain;
 import frc.robot.util.LimelightLib.LimelightHelpers;
 import frc.robot.util.LimelightLib.LimelightHelpers.LimelightResults;
 
