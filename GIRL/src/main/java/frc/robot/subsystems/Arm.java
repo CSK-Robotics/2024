@@ -13,14 +13,18 @@ import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
+import com.revrobotics.SparkMaxLimitSwitch.Direction;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.MecanumDriveMotorVoltages;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.util.Gains;
 
@@ -69,7 +73,9 @@ public class Arm extends SubsystemBase {
         private final ArmFeedforward m_feedforward;
         private final TrapezoidProfile m_profile;
 
-        public Joint(int port, String name, MotorType type, Gains gains, boolean invert,
+        private SysIdRoutine m_sysIdRoutine;
+
+        public Joint(Subsystem arm, int port, String name, MotorType type, Gains gains, boolean invert,
                 Optional<AbsoluteEncoder> encoder, double maxSpeed, double maxAccel, ArmFeedforward feedforward) {
             m_name = name;
             m_motor = new CANSparkMax(port, type);
@@ -98,6 +104,30 @@ public class Arm extends SubsystemBase {
 
             m_profile = new TrapezoidProfile(
                     new Constraints(maxSpeed, maxAccel));
+
+            /** Creates SysId Routine. */
+            m_sysIdRoutine = new SysIdRoutine(
+                    new SysIdRoutine.Config(null, null, null,
+                            (state) -> Logger.recordOutput("Arm" + m_name + "SysID/State", state.toString())),
+                    new SysIdRoutine.Mechanism(
+                            (voltage) -> m_motor.setVoltage(voltage.in(Units.Volts)),
+                            null, arm));
+
+        }
+
+        /**
+         * Returns a command that will excute a quasistatic command in the given
+         * direction
+         */
+        public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+            return m_sysIdRoutine.quasistatic(direction);
+        }
+
+        /**
+         * Returns a command that will excute a dynamic command in the given direction
+         */
+        public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+            return m_sysIdRoutine.dynamic(direction);
         }
 
         public void periodic() {
@@ -160,13 +190,13 @@ public class Arm extends SubsystemBase {
     public class State {
         private final String kID;
 
-        @AutoLogOutput (key = "State/{kID}/Goal")
+        @AutoLogOutput(key = "State/{kID}/Goal")
         public Goal goal;
 
-        @AutoLogOutput (key = "State/{kID}/Shoulder/Angle")
+        @AutoLogOutput(key = "State/{kID}/Shoulder/Angle")
         public double shoulderAngle;
 
-        @AutoLogOutput (key = "State/{kID}/Elbow/Angle")
+        @AutoLogOutput(key = "State/{kID}/Elbow/Angle")
         public double elbowAngle;
 
         public State(String name) {
@@ -186,11 +216,11 @@ public class Arm extends SubsystemBase {
     private final Joint m_elbow;
 
     public Arm(Optional<AbsoluteEncoder> encoder) {
-        m_shoulder = new Joint(ArmConstants.kShoulderMotorPort, "ArmShoulderJoint", MotorType.kBrushless,
+        m_shoulder = new Joint(this, ArmConstants.kShoulderMotorPort, "ArmShoulderJoint", MotorType.kBrushless,
                 ArmConstants.kPIDShoulder, false, encoder, ArmConstants.kShoulderMaxAttainableSpeed,
                 ArmConstants.kShoulderMaxAcceleration, ArmConstants.kShoulderFeedforward);
 
-        m_elbow = new Joint(ArmConstants.kElbowMotorPort, "ArmElbowJoint", MotorType.kBrushless, ArmConstants.kPIDElbow,
+        m_elbow = new Joint(this, ArmConstants.kElbowMotorPort, "ArmElbowJoint", MotorType.kBrushless, ArmConstants.kPIDElbow,
                 false, Optional.empty(), ArmConstants.kElbowMaxAttainableSpeed, ArmConstants.kElbowMaxAcceleration,
                 ArmConstants.kElbowFeedforward);
     }

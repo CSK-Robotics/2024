@@ -26,12 +26,17 @@ import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog.State;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.util.Gains;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 public final class Drivetrain extends SubsystemBase implements AutoCloseable {
   public final class Wheel {
@@ -204,6 +209,25 @@ public final class Drivetrain extends SubsystemBase implements AutoCloseable {
   MecanumDrivePoseEstimator m_odometry;
 
   StructPublisher<Pose2d> publisher;
+
+   /** Creates SysId Routine. */
+  private final SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
+      new SysIdRoutine.Config(
+          null, null, null,
+          (State state) -> Logger.recordOutput("Drive/SysID/State", state.toString())),
+      new SysIdRoutine.Mechanism(
+          (voltage) -> drive(new MecanumDriveMotorVoltages(voltage.in(Units.Volts), voltage.in(Units.Volts), voltage.in(Units.Volts), voltage.in(Units.Volts))),
+          null, this));
+
+  /** Returns a command that will excute a quasistatic command in the given direction  */
+  public Command sysIdQuasistatic(SysIdRoutine.Direction direction){
+    return m_sysIdRoutine.quasistatic(direction);
+  }
+
+  /** Returns a command that will excute a dynamic command in the given direction  */
+  public Command sysIdDynamic(SysIdRoutine.Direction direction){
+    return m_sysIdRoutine.dynamic(direction);
+  }
 
   /** Creates a new DriveSubsystem. */
   public Drivetrain() {
