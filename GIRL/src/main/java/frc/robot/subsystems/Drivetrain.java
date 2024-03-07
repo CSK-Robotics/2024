@@ -74,6 +74,7 @@ public final class Drivetrain extends SubsystemBase implements AutoCloseable {
     private final SparkPIDController m_controller;
 
     public Wheel(int port, String name, MotorType type, Gains gains, boolean invert) {
+      inputs = new Inputs();
       m_name = name;
       m_motor = new CANSparkMax(port, type);
 
@@ -142,22 +143,22 @@ public final class Drivetrain extends SubsystemBase implements AutoCloseable {
 
   public final class Gyro {
     public static final class Inputs implements LoggableInputs {
-      public Rotation3d orientation = new Rotation3d();
+      //public Rotation3d orientation = new Rotation3d();
       public Rotation2d rate = new Rotation2d();
 
       @Override
       public void toLog(LogTable table) {
-        table.put("Orientation/Roll", Units.Degrees.convertFrom(orientation.getX(), Units.Radians));
-        table.put("Orientation/Pitch", Units.Degrees.convertFrom(orientation.getY(), Units.Radians));
-        table.put("Orientation/Yaw", Units.Degrees.convertFrom(orientation.getZ(), Units.Radians));
+        //table.put("Orientation/Roll", Units.Degrees.convertFrom(orientation.getX(), Units.Radians));
+        //table.put("Orientation/Pitch", Units.Degrees.convertFrom(orientation.getY(), Units.Radians));
+        //table.put("Orientation/Yaw", Units.Degrees.convertFrom(orientation.getZ(), Units.Radians));
         table.put("Orientation/Yaw/Rate", rate.getDegrees());
       }
 
       @Override
       public void fromLog(LogTable table) {
-        orientation = new Rotation3d(table.get("Orientation/Roll").getDouble(),
-            table.get("Orientation/Pitch").getDouble(),
-            table.get("Orientation/Yaw").getDouble());
+       //orientation = new Rotation3d(table.get("Orientation/Roll").getDouble(),
+        //    table.get("Orientation/Pitch").getDouble(),
+        //    table.get("Orientation/Yaw").getDouble());
         rate = Rotation2d.fromDegrees(table.get("Orientation/Yaw/Rate").getDouble());
       }
     }
@@ -177,7 +178,7 @@ public final class Drivetrain extends SubsystemBase implements AutoCloseable {
     }
 
     public void updateInputs() {
-      inputs.orientation = getOrientation();
+      //inputs.orientation = getOrientation();
       inputs.rate = getRate();
     }
 

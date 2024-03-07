@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.util.Gains;
 
@@ -112,6 +113,13 @@ public class Arm extends SubsystemBase {
                             (voltage) -> m_motor.setVoltage(voltage.in(Units.Volts)),
                             null, arm));
 
+            
+            SmartDashboard.putData(sysIdDynamic(Direction.kForward));
+            SmartDashboard.putData(sysIdDynamic(Direction.kReverse));
+
+            
+            SmartDashboard.putData(sysIdQuasistatic(Direction.kForward));
+            SmartDashboard.putData(sysIdQuasistatic(Direction.kReverse));
         }
 
         /**
@@ -119,14 +127,18 @@ public class Arm extends SubsystemBase {
          * direction
          */
         public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-            return m_sysIdRoutine.quasistatic(direction);
+            Command command = m_sysIdRoutine.quasistatic(direction);
+            command.setName(direction.toString() + "_Quasistatic_" + m_name);
+            return command;
         }
 
         /**
          * Returns a command that will excute a dynamic command in the given direction
          */
         public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-            return m_sysIdRoutine.dynamic(direction);
+            Command command = m_sysIdRoutine.quasistatic(direction);
+            command.setName(direction.toString() + "_Dynamic_" + m_name);
+            return command;
         }
 
         public void periodic() {

@@ -26,10 +26,10 @@ import frc.robot.util.Gains;
  */
 public final class Constants {
   public static final class DriveConstants {
-    public static final int kFrontLeftMotorPort = 1;
-    public static final int kRearLeftMotorPort = 2;
-    public static final int kFrontRightMotorPort = 3;
-    public static final int kRearRightMotorPort = 4;
+    public static final int kFrontLeftMotorPort = 3;
+    public static final int kRearLeftMotorPort = 4;
+    public static final int kFrontRightMotorPort = 1;
+    public static final int kRearRightMotorPort = 2;
 
     public static final double kTrackWidth = 0.5;
     // Distance between centers of right and left wheels on robot
@@ -71,7 +71,7 @@ public final class Constants {
   }
 
   public static final class ArmConstants {
-    public static final int kShoulderMotorPort = 5;
+    public static final int kShoulderMotorPort = 7;
     public static final int kElbowMotorPort = 6;
 
     public static final double kUpperArmLength = 0.5;

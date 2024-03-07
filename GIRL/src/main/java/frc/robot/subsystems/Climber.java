@@ -19,7 +19,7 @@ public class Climber extends SubsystemBase {
         public double elevatorPosition;    
     }
 
-    private final CANSparkFlex m_elevator = new CANSparkFlex(1, CANSparkMax.MotorType.kBrushless);
+    private final CANSparkFlex m_elevator = new CANSparkFlex(11, CANSparkMax.MotorType.kBrushless);
     private final DoubleSolenoid m_lock = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 1);
 
     public Command stow() {

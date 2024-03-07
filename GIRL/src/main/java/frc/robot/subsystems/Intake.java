@@ -19,8 +19,8 @@ public class Intake extends SubsystemBase {
 
     private State setpoint;
 
-    private final CANSparkMax m_rollers = new CANSparkMax(2, CANSparkMax.MotorType.kBrushless);
-    private final DigitalInput m_noteDetector = new DigitalInput(0);
+    private final CANSparkMax m_rollers = new CANSparkMax(5, CANSparkMax.MotorType.kBrushless);
+    private final DigitalInput m_noteDetector = new DigitalInput(9);
 
     @Override
     public void periodic() {

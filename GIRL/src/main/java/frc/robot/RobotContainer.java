@@ -34,7 +34,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  private final PowerDistribution m_pdh;
+  //private final PowerDistribution m_pdh;
 
   // The robot's subsystems and commands are defined here...
   private final Drivetrain m_drivetrain;
@@ -48,7 +48,7 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    m_pdh = new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
+    //m_pdh = new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
     
     m_drivetrain = new Drivetrain();
 
@@ -79,14 +79,14 @@ public class RobotContainer {
     // cancelling on release.
     m_driverController.leftBumper().whileTrue(m_superstructure.sourceIntake(true).alongWith(m_vision.track(Vision.Goal.SOURCE)));
     m_driverController.rightBumper().whileTrue(m_superstructure.sourceIntake(false).alongWith(m_vision.track(Vision.Goal.SOURCE)));
-    m_driverController.leftTrigger().whileTrue(m_superstructure.groundIntake(true).alongWith(m_vision.track(Vision.Goal.NOTE)));
-    m_driverController.rightTrigger().whileTrue(m_superstructure.groundIntake(false).alongWith(m_vision.track(Vision.Goal.NOTE)));
+    //m_driverController.leftTrigger().whileTrue(m_superstructure.groundIntake(true).alongWith(m_vision.track(Vision.Goal.NOTE)));
+    //m_driverController.rightTrigger().whileTrue(m_superstructure.groundIntake(false).alongWith(m_vision.track(Vision.Goal.NOTE)));
 
     m_driverController.a().whileTrue(m_superstructure.ampShot(0).alongWith(m_vision.track(Vision.Goal.AMP)));
     m_driverController.b().whileTrue(m_superstructure.speakerShot(0, false).alongWith(m_vision.track(Vision.Goal.SPEAKER)));
     m_driverController.x().whileTrue(m_superstructure.speakerShot(0, true).alongWith(m_vision.track(Vision.Goal.SPEAKER)));
 
-    m_driverController.y().toggleOnTrue(m_superstructure.climb(null).alongWith(m_vision.track(Vision.Goal.TRAP)));
+    //m_driverController.y().toggleOnTrue(m_superstructure.climb(null).alongWith(m_vision.track(Vision.Goal.TRAP)));
   }
 
   /**

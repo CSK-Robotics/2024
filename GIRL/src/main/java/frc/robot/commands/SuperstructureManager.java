@@ -21,7 +21,7 @@ public class SuperstructureManager {
         this.m_shooter = shooter;
         this.m_intake = intake;
     }
-
+/* 
     public Command groundIntake(boolean direction) {
         return direction ? this.m_intake.run(direction).alongWith(this.m_climber.stow().andThen(this.m_arm.handoff()))
                 .andThen(this.m_shooter.handoff(direction).alongWith(this.m_intake.handoff(direction)))
@@ -29,33 +29,33 @@ public class SuperstructureManager {
                         .andThen(this.m_shooter.handoff(direction).alongWith(this.m_intake.handoff(direction)))
                         .andThen(this.m_intake.run(direction));
     }
-
+*/
     public Command sourceIntake(boolean direction) {
-        return this.m_climber.stow().andThen(this.m_arm.source()).andThen(this.m_shooter.source());
+        return this.m_arm.source().andThen(this.m_shooter.source());
     }
 
     public Command speakerShot(double range, boolean high) {
         if (hasGamePiece()) {
-            return this.m_climber.stow().andThen(this.m_arm.shoot(0, 0, Arm.Goal.SPEAKER));
+            return this.m_arm.shoot(0, 0, Arm.Goal.SPEAKER);
         }
         return null;
     }
 
     public Command ampShot(double range) {
         if (hasGamePiece()) {
-            return this.m_climber.stow().andThen(this.m_arm.amp()).andThen(this.m_shooter.shoot(0, null));
+            return this.m_arm.amp().andThen(this.m_shooter.shoot(0, null));
         }
         return null;
     }
 
-    public Command climb(BooleanSupplier inPosition) {
+    /*public Command climb(BooleanSupplier inPosition) {
         return this.m_climber.stow().andThen(this.m_arm.climb())
                 .andThen(this.m_climber.climb().beforeStarting(new WaitUntilCommand(inPosition)));
-    }
+    }*/
 
-    public Command trap(BooleanSupplier inPosition) {
+    /*public Command trap(BooleanSupplier inPosition) {
         return this.climb(inPosition);
-    }
+    }*/
 
     public boolean hasGamePiece() {
         return m_intake.hasGamePiece() || m_shooter.hasGamePiece();

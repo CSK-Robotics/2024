@@ -29,9 +29,9 @@ public class Shooter extends SubsystemBase {
     private State setpoint;
     private EventLoop m_loop;
 
-    private final CANSparkFlex m_top = new CANSparkFlex(1, CANSparkMax.MotorType.kBrushless);
-    private final CANSparkFlex m_bottom = new CANSparkFlex(1, CANSparkMax.MotorType.kBrushless);
-    private final CANSparkMax m_indexer = new CANSparkMax(2, CANSparkMax.MotorType.kBrushless);
+    private final CANSparkFlex m_top = new CANSparkFlex(8, CANSparkMax.MotorType.kBrushless);
+    private final CANSparkFlex m_bottom = new CANSparkFlex(9, CANSparkMax.MotorType.kBrushless);
+    private final CANSparkFlex m_indexer = new CANSparkFlex(10, CANSparkMax.MotorType.kBrushless);
     private final DigitalInput m_noteDetector = new DigitalInput(0);
 
     @Override
