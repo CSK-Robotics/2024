@@ -17,9 +17,11 @@ import frc.robot.subsystems.Vision;
 
 import java.util.Optional;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandStadiaController;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -36,6 +38,7 @@ public class RobotContainer {
 
   // The robot's subsystems and commands are defined here...
   private final Drivetrain m_drivetrain;
+  private final Intake m_intake;
   private final SuperstructureManager m_superstructure;
   private final Vision m_vision;
   //private final LED m_led;
@@ -49,7 +52,8 @@ public class RobotContainer {
     
     m_drivetrain = new Drivetrain();
 
-    m_superstructure = new SuperstructureManager(new Arm(Optional.empty()), new Climber(), new Shooter(), new Intake());
+    m_intake = new Intake();
+    m_superstructure = new SuperstructureManager(new Arm(Optional.of(m_intake.getShoulderToChassisEncoder())), new Climber(), new Shooter(), m_intake);
 
     m_vision = new Vision(m_drivetrain, m_superstructure);
     //m_led = new LED(m_superstructure, m_vision);

@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkAbsoluteEncoder.Type;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -47,5 +49,9 @@ public class Intake extends SubsystemBase {
 
     public boolean hasGamePiece() {
         return m_noteDetector.get();
+    }
+
+    public AbsoluteEncoder getShoulderToChassisEncoder() {
+        return m_rollers.getAbsoluteEncoder(Type.kDutyCycle);
     }
 }
