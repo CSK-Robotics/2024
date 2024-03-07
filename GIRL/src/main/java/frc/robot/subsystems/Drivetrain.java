@@ -232,11 +232,11 @@ public final class Drivetrain extends SubsystemBase implements AutoCloseable {
   /** Creates a new DriveSubsystem. */
   public Drivetrain() {
     m_frontLeft = new Wheel(DriveConstants.kFrontLeftMotorPort, "FrontLeftDriveWheel", MotorType.kBrushless,
-        DriveConstants.kPIDFrontLeftVel, false);
+        DriveConstants.kPIDFrontLeftVel, true);
     m_frontRight = new Wheel(DriveConstants.kFrontRightMotorPort, "FrontRightDriveWheel", MotorType.kBrushless,
         DriveConstants.kPIDFrontRightVel, false);
     m_rearLeft = new Wheel(DriveConstants.kRearLeftMotorPort, "RearLeftDriveWheel", MotorType.kBrushless,
-        DriveConstants.kPIDRearLeftVel, false);
+        DriveConstants.kPIDRearLeftVel, true);
     m_rearRight = new Wheel(DriveConstants.kRearRightMotorPort, "RearRightDriveWheel", MotorType.kBrushless,
         DriveConstants.kPIDRearRightVel, false);
 

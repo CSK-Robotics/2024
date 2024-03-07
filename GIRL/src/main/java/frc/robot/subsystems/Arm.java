@@ -13,11 +13,9 @@ import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
-import com.revrobotics.SparkMaxLimitSwitch.Direction;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.MecanumDriveMotorVoltages;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.units.Units;
@@ -220,7 +218,8 @@ public class Arm extends SubsystemBase {
                 ArmConstants.kPIDShoulder, false, encoder, ArmConstants.kShoulderMaxAttainableSpeed,
                 ArmConstants.kShoulderMaxAcceleration, ArmConstants.kShoulderFeedforward);
 
-        m_elbow = new Joint(this, ArmConstants.kElbowMotorPort, "ArmElbowJoint", MotorType.kBrushless, ArmConstants.kPIDElbow,
+        m_elbow = new Joint(this, ArmConstants.kElbowMotorPort, "ArmElbowJoint", MotorType.kBrushless,
+                ArmConstants.kPIDElbow,
                 false, Optional.empty(), ArmConstants.kElbowMaxAttainableSpeed, ArmConstants.kElbowMaxAcceleration,
                 ArmConstants.kElbowFeedforward);
     }
@@ -344,7 +343,7 @@ public class Arm extends SubsystemBase {
     }
 
     public State getState() {
-        State temp = new State("temp");
+        State temp = new State("Current");
         temp.elbowAngle = m_elbow.getPosition();
         temp.shoulderAngle = m_shoulder.getPosition();
         temp.goal = setpoint.goal;
