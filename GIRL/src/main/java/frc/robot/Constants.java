@@ -102,9 +102,9 @@ public final class Constants {
     public static final double kHandoffShoulderAngle = 45.0; // degrees.
     public static final double kHandoffElbowAngle = 45.0; // degrees.
     public static final double kSourceShoulderAngle = 45.0; // degrees.
-    public static final double kSourceElbowAngle = 45.0; // degrees.
+    public static final double kSourceElbowAngle = 60.0; // degrees.
     public static final double kAmpShoulderAngle = 45.0; // degrees.
-    public static final double kAmpElbowAngle = 45.0; // degrees.
+    public static final double kAmpElbowAngle = 135.0; // degrees. 
     public static final double kClimbShoulderAngle = 45.0; // degrees.
     public static final double kClimbElbowAngle = 45.0; // degrees.
 

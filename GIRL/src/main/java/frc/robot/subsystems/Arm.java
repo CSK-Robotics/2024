@@ -190,7 +190,7 @@ public class Arm extends SubsystemBase {
     public class State {
         private final String kID;
 
-        @AutoLogOutput(key = "State/{kID}/Goal")
+        @AutoLogOutput(key = "State/{kID}/Goal") 
         public Goal goal;
 
         @AutoLogOutput(key = "State/{kID}/Shoulder/Angle")
@@ -295,6 +295,7 @@ public class Arm extends SubsystemBase {
         setpoint.elbowAngle = elbow;
     }
 
+    //ground intake
     public Command handoff() {
         return this.runEnd(() -> {
             setState(Goal.HANDOFF, ArmConstants.kHandoffShoulderAngle,
@@ -304,6 +305,7 @@ public class Arm extends SubsystemBase {
         }).until(this::atTarget);
     }
 
+    // human player 
     public Command source() {
         return this.runEnd(() -> {
             setState(Goal.SOURCE, ArmConstants.kSourceShoulderAngle, ArmConstants.kSourceElbowAngle);
@@ -323,6 +325,7 @@ public class Arm extends SubsystemBase {
     public Command shoot(double height, double angle, Goal goal) {
         // TODO: calculate state from height and angle
         double elbow = 0.0;
+         
         double shoulder = 0.0;
         return this.runEnd(() -> {
             setState(goal, shoulder, elbow);
