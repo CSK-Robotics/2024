@@ -15,6 +15,8 @@ import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import frc.robot.Constants.DriveConstants;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkAbsoluteEncoder.Type;
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -64,8 +66,10 @@ public class DriveSubsystem extends SubsystemBase {
     // We need to invert one side of the drivetrain so that positive voltages
     // result in both sides moving forward. Depending on how your robot's
     // gearbox is constructed, you might have to invert the left side instead.
-    m_frontRight.setInverted(true);
-    m_rearRight.setInverted(true);
+    m_frontLeft.setInverted(DriveConstants.kFrontLeftEncoderReversed);
+    m_rearLeft.setInverted(DriveConstants.kRearLeftEncoderReversed);
+    m_frontRight.setInverted(DriveConstants.kFrontRightEncoderReversed);
+    m_rearRight.setInverted(DriveConstants.kRearRightEncoderReversed);
   }
 
   @Override
@@ -217,5 +221,12 @@ public class DriveSubsystem extends SubsystemBase {
    */
   public double getTurnRate() {
     return -m_gyro.getRate();
+  }
+
+  public AbsoluteEncoder getShoulderToChassisEncoder() {
+        return m_frontRight.getAbsoluteEncoder(Type.kDutyCycle);
+    }
+    public AbsoluteEncoder getShoulderToArmEncoder() {
+      return m_rearRight.getAbsoluteEncoder(Type.kDutyCycle);
   }
 }
